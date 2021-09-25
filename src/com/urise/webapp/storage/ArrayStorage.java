@@ -8,7 +8,7 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private final Resume[] storage = new Resume[10000];
+    private final Resume[] storage = new Resume[10_000];
     private int size = 0;
 
     public void clear() {
@@ -17,8 +17,8 @@ public class ArrayStorage {
     }
 
     public void save(Resume r) {
-        if (r.getUuid() == null || isInStorage(r) || size > 10000) {
-            System.out.println("Resume already exists or storage is full");
+        if (r.getUuid() == null || getIndex(r.getUuid()) != -1 || size > 10_000) {
+            System.out.println("Resume with uuid " + r.getUuid() + " already exists or storage is full");
         } else {
             storage[size] = r;
             size++;
@@ -26,16 +26,16 @@ public class ArrayStorage {
     }
 
     public void update(Resume r) {
-        if (r.getUuid() == null || !isInStorage(r)) {
-            System.out.println("Resume does not exist");
+        if (r.getUuid() == null || getIndex(r.getUuid()) == -1) {
+            System.out.println("Resume with uuid " + r.getUuid() + " does not exist");
         } else {
             storage[getIndex(r.getUuid())] = r;
         }
     }
 
     public Resume get(String uuid) {
-        if (!isInStorage(uuid)) {
-            System.out.println("Resume does not exist");
+        if (getIndex(uuid) == -1) {
+            System.out.println("Resume with uuid " + uuid + " does not exist");
             return null;
         } else {
             return storage[getIndex(uuid)];
@@ -43,8 +43,8 @@ public class ArrayStorage {
     }
 
     public void delete(String uuid) {
-        if (!isInStorage(uuid)) {
-            System.out.println("Resume does not exist");
+        if (getIndex(uuid) == -1) {
+            System.out.println("Resume with uuid " + uuid + " does not exist");
         } else {
             int index = getIndex(uuid);
             storage[index] = storage[size - 1];
@@ -53,30 +53,8 @@ public class ArrayStorage {
         }
     }
 
-    private boolean isInStorage(Resume r) {
-        boolean isExist = false;
-        for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(r.getUuid())) {
-                isExist = true;
-                break;
-            }
-        }
-        return isExist;
-    }
-
-    private boolean isInStorage(String uuid) {
-        boolean isExist = false;
-        for (int i = 0; i < size; i++) {
-            if (uuid.equals(storage[i].getUuid())) {
-                isExist = true;
-                break;
-            }
-        }
-        return isExist;
-    }
-
     private int getIndex(String uuid) {
-        int index = 0;
+        int index = -1;
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
                 index = i;
