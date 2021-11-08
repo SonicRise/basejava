@@ -2,54 +2,58 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
 
+import java.util.Arrays;
+
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage extends AbstractArrayStorage {
+public class SortedArrayStorage extends AbstractArrayStorage {
 
+    @Override
     public void save(Resume resume) {
+        int index = getIndex(resume.getUuid());
         if (size == STORAGE_LIMIT) {
             System.out.println("Storage is full");
         } else if (resume.getUuid() == null) {
             System.out.println("UUID in Resume is null");
-        } else if (getIndex(resume.getUuid()) != -1) {
+        } else if (index >= 0) {
             System.out.println("Resume with uuid " + resume.getUuid() + " already exists");
         } else {
-            storage[size] = resume;
+            int newIndex = Math.abs(index) - 1;
+            if (size - newIndex >= 0) System.arraycopy(storage, newIndex, storage, newIndex + 1, size - newIndex);
+            storage[newIndex] = resume;
             size++;
         }
     }
 
+    @Override
     public void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (resume.getUuid() == null) {
             System.out.println("UUID in Resume is null");
-        } else if (index == -1) {
+        } else if (index < 0) {
             System.out.println("Resume with uuid " + resume.getUuid() + " does not exist");
         } else {
             storage[index] = resume;
         }
     }
 
+    @Override
     public void delete(String uuid) {
         int index = getIndex(uuid);
-        if (index == -1) {
+        if (index < 0) {
             System.out.println("Resume with uuid " + uuid + " does not exist");
         } else {
-            storage[index] = storage[size - 1];
+            if (size - 1 - index >= 0) System.arraycopy(storage, index + 1, storage, index, size - 1 - index);
             storage[size - 1] = null;
             size--;
         }
     }
 
+    @Override
     protected int getIndex(String uuid) {
-        int index = -1;
-        for (int i = 0; i < size; i++) {
-            if (uuid.equals(storage[i].getUuid())) {
-                index = i;
-                break;
-            }
-        }
-        return index;
+        Resume searchKey = new Resume();
+        searchKey.setUuid(uuid);
+        return Arrays.binarySearch(storage, 0, size, searchKey);
     }
 }
