@@ -20,17 +20,6 @@ public class ArrayStorage extends AbstractArrayStorage {
         }
     }
 
-    public void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (resume.getUuid() == null) {
-            System.out.println("UUID in Resume is null");
-        } else if (index == -1) {
-            System.out.println("Resume with uuid " + resume.getUuid() + " does not exist");
-        } else {
-            storage[index] = resume;
-        }
-    }
-
     public void delete(String uuid) {
         int index = getIndex(uuid);
         if (index == -1) {

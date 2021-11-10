@@ -31,6 +31,17 @@ public abstract class AbstractArrayStorage implements Storage {
         return storage[index];
     }
 
+    public void update(Resume resume) {
+        int index = getIndex(resume.getUuid());
+        if (resume.getUuid() == null) {
+            System.out.println("UUID in Resume is null");
+        } else if (index < 0) {
+            System.out.println("Resume with uuid " + resume.getUuid() + " does not exist");
+        } else {
+            storage[index] = resume;
+        }
+    }
+
     /**
      * @return array, contains only Resumes in storage (without null)
      */
