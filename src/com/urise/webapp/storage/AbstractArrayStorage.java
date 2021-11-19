@@ -32,8 +32,15 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     public void save(Resume resume) {
-        if (isCheckPassed(resume, true)) {
+        if (size == STORAGE_LIMIT) {
+            System.out.println("Storage is full");
+        } else if (resume.getUuid() == null) {
+            System.out.println("UUID in Resume is null");
+        } else if (getIndex(resume.getUuid()) >= 0) {
+            System.out.println("Resume with uuid " + resume.getUuid() + " already exists");
+        } else {
             doSave(resume);
+            size++;
         }
     }
 
@@ -43,12 +50,19 @@ public abstract class AbstractArrayStorage implements Storage {
             System.out.println("Resume with uuid " + uuid + " does not exist");
         } else {
             doDelete(index);
+            storage[size - 1] = null;
+            size--;
         }
     }
 
     public void update(Resume resume) {
-        if (isCheckPassed(resume, false)) {
-            storage[getIndex(resume.getUuid())] = resume;
+        int index = getIndex(resume.getUuid());
+        if (resume.getUuid() == null) {
+            System.out.println("UUID in Resume is null");
+        } else if (index < 0) {
+            System.out.println("Resume with uuid " + resume.getUuid() + " does not exist");
+        } else {
+            storage[index] = resume;
         }
     }
 
@@ -64,22 +78,4 @@ public abstract class AbstractArrayStorage implements Storage {
     protected abstract void doSave(Resume resume);
 
     protected abstract void doDelete(int index);
-
-    private boolean isCheckPassed(Resume resume, boolean isExist) {
-        if (size == STORAGE_LIMIT) {
-            System.out.println("Storage is full");
-            return false;
-        } else if (resume.getUuid() == null) {
-            System.out.println("UUID in Resume is null");
-            return false;
-        } else if (isExist && getIndex(resume.getUuid()) >= 0) {
-            System.out.println("Resume with uuid " + resume.getUuid() + " already exists");
-            return false;
-        } else if (!isExist && getIndex(resume.getUuid()) < 0) {
-            System.out.println("Resume with uuid " + resume.getUuid() + " does not exist");
-            return false;
-        } else {
-            return true;
-        }
-    }
 }

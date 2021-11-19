@@ -14,14 +14,11 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         int newIndex = Math.abs(getIndex(resume.getUuid())) - 1;
         if (size - newIndex >= 0) System.arraycopy(storage, newIndex, storage, newIndex + 1, size - newIndex);
         storage[newIndex] = resume;
-        size++;
     }
 
     @Override
     protected void doDelete(int index) {
         if (size - 1 - index >= 0) System.arraycopy(storage, index + 1, storage, index, size - 1 - index);
-        storage[size - 1] = null;
-        size--;
     }
 
     @Override
