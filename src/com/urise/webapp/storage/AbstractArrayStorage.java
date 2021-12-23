@@ -38,30 +38,27 @@ public abstract class AbstractArrayStorage implements Storage {
             throw new StorageException("Storage is full", resume.getUuid());
         } else if (getIndex(resume.getUuid()) >= 0) {
             throw new ExistStorageException(resume.getUuid());
-        } else {
-            insertElement(resume);
-            size++;
         }
+        insertElement(resume);
+        size++;
     }
 
     public void delete(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
             throw new NotExistStorageException(uuid);
-        } else {
-            fillDeletedElement(index);
-            storage[size - 1] = null;
-            size--;
         }
+        fillDeletedElement(index);
+        storage[size - 1] = null;
+        size--;
     }
 
     public void update(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (index < 0) {
             throw new NotExistStorageException(resume.getUuid());
-        } else {
-            storage[index] = resume;
         }
+        storage[index] = resume;
     }
 
     /**

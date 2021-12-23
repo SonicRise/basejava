@@ -8,10 +8,4 @@ public class ArrayStorageTest extends AbstractArrayStorageTest {
     public ArrayStorageTest() {
         super(new ArrayStorage());
     }
-
-    @Test
-    public void getIndex() {
-        ArrayStorage arrayStorage = (ArrayStorage) storage;
-        Assert.assertEquals(0, arrayStorage.getIndex(UUID_1));
-    }
 }

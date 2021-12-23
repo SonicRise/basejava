@@ -4,7 +4,7 @@ import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,40 +31,77 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void size() throws Exception {
-        Assert.assertEquals(3, storage.size());
+       assertSize(3);
     }
 
     @Test
     public void clear() throws Exception {
         storage.clear();
-        Assert.assertEquals(0, storage.size());
+        assertSize(0);
     }
 
     @Test
     public void get() throws Exception {
         Resume r = new Resume(UUID_1);
-        Assert.assertEquals(r, storage.get(UUID_1));
+        assertObject(r);
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void getNotExist() throws Exception {
+        storage.get("dummy");
     }
 
     @Test
     public void save() throws Exception {
+        int initSize = storage.size();
         Resume r = new Resume(UUID_4);
         storage.save(r);
-        Assert.assertEquals(r, storage.get(UUID_4));
+        assertObject(r);
+        assertSize(initSize + 1);
     }
 
-    @Test
+    @Test(expected = ExistStorageException.class)
+    public void saveExist() throws Exception {
+        storage.save(new Resume(UUID_1));
+    }
+
+    @Test(expected = StorageException.class)
+    public void saveOverflow() throws Exception {
+        try {
+            for (int i = storage.size(); i < 10_000; i++) {
+                storage.save(new Resume());
+            }
+        } catch (Exception e) {
+            fail("Overflow happened too early");
+        }
+
+        System.out.println(storage.size());
+        storage.save(new Resume());
+    }
+
+    @Test(expected = NotExistStorageException.class)
     public void delete() throws Exception {
         int initSize = storage.size();
         storage.delete(UUID_1);
-        Assert.assertEquals(initSize - 1, storage.size());
+        assertSize(initSize - 1);
+        storage.get(UUID_1);
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void deleteNotExist() throws Exception {
+        storage.delete(UUID_4);
     }
 
     @Test
     public void update() throws Exception {
         Resume r = new Resume(UUID_1);
         storage.update(r);
-        Assert.assertEquals(r, storage.get(UUID_1));
+        assertObject(r);
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void updateNotExist() throws Exception {
+        storage.update(new Resume(UUID_4));
     }
 
     @Test
@@ -73,48 +110,14 @@ public abstract class AbstractArrayStorageTest {
         resumes[0] = new Resume(UUID_1);
         resumes[1] = new Resume(UUID_2);
         resumes[2] = new Resume(UUID_3);
-        Assert.assertArrayEquals(resumes, storage.getAll());
+        assertArrayEquals(resumes, storage.getAll());
     }
 
-    @Test(expected = NotExistStorageException.class)
-    public void getNotExist() throws Exception {
-        storage.get("dummy");
+    private void assertObject(Resume resume) {
+        assertEquals(resume, storage.get(resume.getUuid()));
     }
 
-    @Test(expected = ExistStorageException.class)
-    public void getExist() throws Exception {
-        Resume r = new Resume(UUID_1);
-        storage.save(r);
-    }
-
-    @Test
-    public void getOverflow() throws Exception {
-        //Reflection
-        /*Field storageLimit = storage.getClass().getSuperclass().getDeclaredField("STORAGE_LIMIT");
-        Field size = storage.getClass().getSuperclass().getDeclaredField("size");
-        size.set(storage, storageLimit.get(storage));
-        Resume r = new Resume(UUID_1);
-        try {
-            storage.save(r);
-        } catch (StorageException e) {
-
-        }*/
-
-        //Loop
-        try {
-            for (int i = storage.size(); i < 10_000; i++) {
-                storage.save(new Resume());
-            }
-        } catch (Exception e) {
-            Assert.fail("Overflow happened too early");
-        }
-
-        System.out.println(storage.size());
-
-        try {
-            storage.save(new Resume());
-        } catch (StorageException e) {
-
-        }
+    private void assertSize(int initSize) {
+        assertEquals(initSize, storage.size());
     }
 }
