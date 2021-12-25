@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-
 public abstract class AbstractArrayStorageTest {
     protected Storage storage;
     public static final String UUID_1 = "uuid1";
@@ -43,7 +41,7 @@ public abstract class AbstractArrayStorageTest {
     @Test
     public void get() throws Exception {
         Resume r = new Resume(UUID_1);
-        assertObject(r);
+        assertResume(r);
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -56,7 +54,7 @@ public abstract class AbstractArrayStorageTest {
         int initSize = storage.size();
         Resume r = new Resume(UUID_4);
         storage.save(r);
-        assertObject(r);
+        assertResume(r);
         assertSize(initSize + 1);
     }
 
@@ -68,10 +66,10 @@ public abstract class AbstractArrayStorageTest {
     @Test(expected = StorageException.class)
     public void saveOverflow() throws Exception {
         try {
-            for (int i = storage.size(); i < 10_000; i++) {
+            for (int i = storage.size(); i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
                 storage.save(new Resume());
             }
-        } catch (Exception e) {
+        } catch (StorageException e) {
             fail("Overflow happened too early");
         }
 
@@ -96,7 +94,7 @@ public abstract class AbstractArrayStorageTest {
     public void update() throws Exception {
         Resume r = new Resume(UUID_1);
         storage.update(r);
-        assertObject(r);
+        assertResume(r);
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -113,7 +111,7 @@ public abstract class AbstractArrayStorageTest {
         assertArrayEquals(resumes, storage.getAll());
     }
 
-    private void assertObject(Resume resume) {
+    private void assertResume(Resume resume) {
         assertEquals(resume, storage.get(resume.getUuid()));
     }
 
