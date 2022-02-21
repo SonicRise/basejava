@@ -3,12 +3,11 @@ package com.urise.webapp.storage;
 import com.urise.webapp.model.Resume;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ListStorage extends AbstractStorage {
 
-    protected final List<Resume> resumeList = new ArrayList<>();
+    private final List<Resume> resumeList = new ArrayList<>();
 
     @Override
     public int size() {
@@ -38,15 +37,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected void deleteElement(int index) {
-        Iterator<Resume> itr = resumeList.iterator();
-        while (itr.hasNext()) {
-            Resume r = itr.next();
-            //System.out.println(r);
-            if (resumeList.get(index).getUuid().equals(r.getUuid())) {
-                itr.remove();
-                break;
-            }
-        }
+        resumeList.remove(index);
     }
 
     @Override
