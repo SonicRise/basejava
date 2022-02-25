@@ -26,8 +26,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume getElement(int index) {
-        return storage[index];
+    protected Resume getElement(Object searchKey) {
+        return storage[(int) searchKey];
     }
 
     @Override
@@ -40,13 +40,13 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected void updateElement(int index, Resume resume) {
-        storage[index] = resume;
+    protected void updateElement(Object searchKey, Resume resume) {
+        storage[(int) searchKey] = resume;
     }
 
     @Override
-    protected void deleteElement(int index) {
-        fillDeletedElement(index);
+    protected void deleteElement(Object searchKey) {
+        fillDeletedElement((int) searchKey);
         storage[size - 1] = null;
         size--;
     }
