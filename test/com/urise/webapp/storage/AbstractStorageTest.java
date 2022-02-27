@@ -96,9 +96,8 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() throws Exception {
-        Resume r = RESUME_1;
-        storage.update(r);
-        assertSame(r, storage.get(r.getUuid()));
+        storage.update(RESUME_1);
+        assertSame(RESUME_1, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -108,7 +107,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void getAll() throws Exception {
-        Resume[] resumes = new Resume[] { RESUME_1, RESUME_2, RESUME_3 };
+        Resume[] resumes = new Resume[]{RESUME_1, RESUME_2, RESUME_3};
         assertArrayEquals(resumes, storage.getAll());
     }
 

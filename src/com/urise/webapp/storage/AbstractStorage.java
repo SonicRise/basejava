@@ -8,49 +8,50 @@ public abstract class AbstractStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        searchKeyNotExistCheck(uuid);
-        return getElement(getSearchKey(uuid));
+        return getResume(getSearchkeyIfExist(uuid));
     }
 
     @Override
     public void save(Resume resume) {
-        searchKeyExistCheck(resume.getUuid());
-        saveElement(resume);
+        getSearchkeyIfNotExist(resume.getUuid());
+        saveResume(resume);
     }
 
     @Override
     public void update(Resume resume) {
-        searchKeyNotExistCheck(resume.getUuid());
-        updateElement(getSearchKey(resume.getUuid()), resume);
+        updateResume(getSearchkeyIfExist(resume.getUuid()), resume);
     }
 
     @Override
     public void delete(String uuid) {
-        searchKeyNotExistCheck(uuid);
-        deleteElement(getSearchKey(uuid));
+        deleteResume(getSearchkeyIfExist(uuid));
     }
 
-    private void searchKeyNotExistCheck(String uuid) {
-        if ((getSearchKey(uuid) instanceof Integer && (Integer) getSearchKey(uuid) < 0) ||
-                (getSearchKey(uuid) instanceof String && getSearchKey(uuid).equals(""))) {
+    private Object getSearchkeyIfExist(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (!isExist(searchKey)) {
             throw new NotExistStorageException(uuid);
         }
+        return searchKey;
     }
 
-    private void searchKeyExistCheck(String uuid) {
-        if ((getSearchKey(uuid) instanceof Integer && (Integer) getSearchKey(uuid) >= 0) ||
-                (getSearchKey(uuid) instanceof String && !getSearchKey(uuid).equals(""))) {
+    private Object getSearchkeyIfNotExist(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (isExist(searchKey)) {
             throw new ExistStorageException(uuid);
         }
+        return searchKey;
     }
+
+    protected abstract boolean isExist(Object searchKey);
 
     protected abstract Object getSearchKey(String uuid);
 
-    protected abstract Resume getElement(Object searchKey);
+    protected abstract Resume getResume(Object searchKey);
 
-    protected abstract void saveElement(Resume resume);
+    protected abstract void saveResume(Resume resume);
 
-    protected abstract void updateElement(Object searchKey, Resume resume);
+    protected abstract void updateResume(Object searchKey, Resume resume);
 
-    protected abstract void deleteElement(Object searchKey);
+    protected abstract void deleteResume(Object searchKey);
 }
